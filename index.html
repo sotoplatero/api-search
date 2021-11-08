@@ -4,26 +4,51 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Mi API</title>
-	<link rel="stylesheet" href="https://unpkg.com/axist@latest/dist/axist.min.css" />
+	<!-- <link rel="stylesheet" href="https://unpkg.com/axist@latest/dist/axist.min.css" /> -->
 	<script defer src="https://unpkg.com/alpinejs@3.4.2/dist/cdn.min.js"></script>
+	<link rel="stylesheet" href="https://unpkg.com/marx-css/css/marx.min.css">
 </head>
 <body>
-
-	<div x-data="{name: '', msg: ''}">
-		<form @submit.prevent="() => {
-			fetch(`/api/que-bola.json?name=${name}`)
-				.then( res => res.json() )
-				.then( ({ text }) => msg = text )			
-		}">
-			<label for="">Dime tu nombre</label>
-			<!--  -->
-			<input type="text" x-model="name">
-		</form>
-		<!-- Mostrar el mensaje -->
-		<template x-if="name">
-			<span x-text="msg"></span>
-		</template>
-	</div>
-
+	<main>
+		<h1>Buscador de clasificados</h1>
+		<div x-data="searcher">
+			<form @submit.prevent="handleSearch()">
+				<strong><label for="">Que quieres comprar?</label></strong>
+				<br>
+				<input type="text" x-model="q" style="width: 100%;">
+			</form>
+			<!-- Mostrar el mensaje -->
+			<br>
+			<ul >
+			    <template x-for="ad in ads">
+			        <li >
+			        	<a :href="ad.url" target="_blank" rel="noopener nofollower">
+			        		<strong x-text="ad.price"></strong>
+			        		<span x-text="ad.title"></span>
+			        	</a>
+		        		<small x-text="ad.url.match(/timbirichi|porlalivre/)"></small>
+			        </li>
+			    </template>
+			</ul>
+		</div>
+		
+	</main>
+	<script type="text/javascript">
+	    document.addEventListener('alpine:init', () => {
+	        Alpine.data('searcher', () => ({
+	            ads: [],
+	            q: '',
+	 
+	            handleSearch() {
+					const sites = ['/api/timbirichi.json?q=','/api/porlalivre.json?q=']
+					sites.forEach( (site) => {
+						fetch( site + this.q)
+							.then( res => res.json())
+							.then( (data) => this.ads = [...this.ads, ...data] )
+					})
+	            },
+	        }))
+	    })		
+	</script>
 </body>
 </html>
