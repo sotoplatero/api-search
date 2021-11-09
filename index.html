@@ -13,7 +13,7 @@
 		<h1>Buscador de clasificados</h1>
 		<div x-data="searcher">
 			<form @submit.prevent="handleSearch()">
-				<strong><label for="">Que quieres comprar?</label></strong>
+				<strong><label for="">¿QuÉ quieres comprar?</label></strong>
 				<br>
 				<input type="text" x-model="q" style="width: 100%;">
 			</form>
@@ -40,10 +40,15 @@
 	            q: '',
 	 
 	            handleSearch() {
-					const sites = ['/api/timbirichi.json?q=','/api/porlalivre.json?q=']
+	            	// CON CADA NUEVA BÚSQUEDA LIMPIAMOS EL LISTADO DE ANUNCIOS
+	            	this.ads = []
+					const sites = ['porlalivre','timbirichi']
+
+					// CREAMOS UN LAZO CON LOS APIS DE CADA SITIO 
 					sites.forEach( (site) => {
-						fetch( site + this.q)
-							.then( res => res.json())
+						// BUB
+						fetch( `/api/${site}.json?q=${q}` )
+							.then( res => res.json() )
 							.then( (data) => this.ads = [...this.ads, ...data] )
 					})
 	            },
